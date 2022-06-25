@@ -8,28 +8,29 @@ import { Items, ItemsDocument } from './schema/items.schema';
 @Injectable()
 export class ItemsService {
 
-  constructor(@InjectModel(Items.name) private itemsModule:Model<ItemsDocument>){
+  constructor(@InjectModel(Items.name) private itemsModel:Model<ItemsDocument>){
 
   }
 
-  async create(createItemDto: CreateItemDto) {
-    const cretedItem = await this.itemsModule.create();
+  async create(createItemDto: CreateItemDto): Promise<Items> {
+    const cretedItem = await this.itemsModel.create(createItemDto);
     return cretedItem;
   }
 
-  async findAll() {
-    return `This action returns all items`;
+  async findAll(): Promise<Items[]> {
+    return this.itemsModel.find().exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} item`;
+  async findOne(id: string): Promise<Items> {
+    return this.itemsModel.findOne({_id: id}).exec();
   }
 
-  update(id: number, updateItemDto: UpdateItemDto) {
+  async update(id: string, updateItemDto: UpdateItemDto) {
     return `This action updates a #${id} item`;
   }
 
-  remove(id: number) {
+  async remove(id: string) {
+    const deletedItem = await this.itemsModel.findByIdAndRemove({_id: id}).exec();
     return `This action removes a #${id} item`;
   }
 }
