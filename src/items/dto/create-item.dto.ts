@@ -3,11 +3,11 @@ import { IsNotEmpty, IsNumber } from "class-validator";
 export class CreateItemDto {
 
     @IsNotEmpty()
-    name: string;
+    readonly name: string;
 
     @IsNumber()
-    price: number;
+    readonly price: number;
 
     
-    description: string;
+    readonly description: string;
 }

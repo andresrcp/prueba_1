@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateItemDto } from './dto/create-item.dto';
@@ -18,19 +18,22 @@ export class ItemsService {
   }
 
   async findAll(): Promise<Items[]> {
-    return this.itemsModel.find().exec();
+    return await this.itemsModel.find().exec();
   }
 
   async findOne(id: string): Promise<Items> {
-    return this.itemsModel.findOne({_id: id}).exec();
+    const item = await this.itemsModel.findOne({_id: id}).exec();
+    if(!item) throw new NotFoundException("Item Not Exists");
+    return item;
   }
 
-  async update(id: string, updateItemDto: UpdateItemDto) {
-    return `This action updates a #${id} item`;
+  async update(id: string, updateItemDto: UpdateItemDto): Promise<Items> {
+    return await this.itemsModel.findOneAndUpdate({_id: id},updateItemDto).exec();
   }
 
-  async remove(id: string) {
-    const deletedItem = await this.itemsModel.findByIdAndRemove({_id: id}).exec();
-    return `This action removes a #${id} item`;
+  async remove(id: string): Promise<Items> {
+    const item = await this.itemsModel.findOneAndDelete({_id: id}).exec();
+    if(!item) throw new NotFoundException("Item Not Exists");
+    return item;
   }
 }
